@@ -1,3 +1,4 @@
-# »úÆ÷Ñ§Ï°Ëã·¨ÊµÏÖÊ¶±ğÓ¡Ë¢ÌåASCLLÂë¡¢¹úÄÚ³µÅÆ×Ö·û
-fisherCharacter.py:fisherËã·¨ÊµÏÖ
-perceptionCharacter.py:¸ĞÖª»úËã·¨ÊµÏÖ
+# æœºå™¨å­¦ä¹ ç®—æ³•å®ç°è¯†åˆ«å°åˆ·ä½“ASCLLç ã€å›½å†…è½¦ç‰Œå­—ç¬¦
+<p>fisherCharacter.py:fisherç®—æ³•å®ç°</p>
+
+<p>perceptionCharacter.py:æ„ŸçŸ¥æœºç®—æ³•å®ç°</p>
