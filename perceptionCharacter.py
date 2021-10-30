@@ -53,8 +53,6 @@ def trainMain():
     """
     for i in range(33, 158):
         for j in range(i + 1, 158):
-            posStr = ""
-            negStr = ""
             if i < 126:
                 posStr = chr(i)
             else:
@@ -160,8 +158,6 @@ def test():
         realValue = str(row.split(" ")[1]).strip()
         # 各字符得分
         result = np.zeros(158)
-        # 预测值
-        predValue = ""
         image = cv.imread(imgPath)
         img_gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         # 二值化图像，黑白图像，只有0和1,0为0,1为255
@@ -189,8 +185,8 @@ def test():
                     result[j] += 1
         # 分数最高字符下标
         maxIndex = np.argmax(result)
-
         if maxIndex > 126:
+            # 预测值
             predValue = cpText[maxIndex - 126]
         else:
             predValue = chr(maxIndex)

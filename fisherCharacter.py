@@ -33,7 +33,7 @@ def getTraingData(target, broTarget):
         # 二值化图像，黑白图像，只有0和1,0为0,1为255
         np.set_printoptions(threshold=np.inf)
         # 50*50
-        ret, imgviewx2 = cv.threshold(~img_gray, 0, 1, cv.THRESH_BINARY )
+        ret, imgviewx2 = cv.threshold(~img_gray, 0, 1, cv.THRESH_BINARY)
         # 35*35
         imgviewx2 = cv.resize(cropImg(imgviewx2), (35, 35))
         # 7*7
@@ -41,9 +41,9 @@ def getTraingData(target, broTarget):
         # 5*5的遍历
         for i in range(0, 35, 5):
             for j in range(0, 35, 5):
-                temMatrix = imgviewx2[i:i+4, j:j+4]
+                temMatrix = imgviewx2[i:i + 4, j:j + 4]
                 sum = np.count_nonzero(temMatrix)
-                imgFeatrue.append(sum/25)
+                imgFeatrue.append(sum / 25)
         # 1*49
         imgFeatrue = np.array(imgFeatrue)
 
@@ -82,11 +82,11 @@ def train(w1, w2, pos, neg):
     for i in range(w2.shape[0]):
         martixSub = np.matrix(w2[i] - m2)
         s2 += martixSub.T * martixSub
-    w = np.dot(np.linalg.pinv(s1+s2), (m1 - m2))
-    print(pos,neg)
-    np.save("./data2/w_"+str(pos)+"_"+str(neg)+"_", w)
-    np.save("./data2/m1_"+str(pos)+"_"+str(neg)+"_", m1)
-    np.save("./data2/m2_"+str(pos)+"_"+str(neg)+"_", m2)
+    w = np.dot(np.linalg.pinv(s1 + s2), (m1 - m2))
+    print(pos, neg)
+    np.save("./data2/w_" + str(pos) + "_" + str(neg) + "_", w)
+    np.save("./data2/m1_" + str(pos) + "_" + str(neg) + "_", m1)
+    np.save("./data2/m2_" + str(pos) + "_" + str(neg) + "_", m2)
     # return w, m1, m2
 
 
@@ -94,11 +94,19 @@ def trainMain():
     """
         训练入口函数，穷举出ASCLL码33-126，以及31个中文字符共158个字符的两两结合的所有组合并进行训练。
     """
-    for i in range(0, 32):
-        for j in range(i+1, 32):
-            w1, w2 = getTraingData(cpText[i], cpText[j])
-            train(w1, w2, cpText[i], cpText[j])
-        print(cpText[i])
+    for i in range(33, 158):
+        for j in range(i + 1, 158):
+            if i < 126:
+                posStr = chr(i)
+            else:
+                posStr = cpText[i - 126]
+            if j < 126:
+                negStr = chr(j)
+            else:
+                negStr = cpText[j - 126]
+            w1, w2 = getTraingData(posStr, negStr)
+            train(w1, w2, i, j)
+        print(i, j)
 
 
 def cropImg(image):
@@ -144,15 +152,9 @@ def test():
     testLable = open("testLabel.txt")
     ok = 0
     error = 0
-    last = ''
-    dataSet = testLable.readlines()
-    for currentLine in range(941, 1004):
-        row = dataSet[currentLine]
+    for row in testLable.readlines():
         imgPath = row.split(" ")[0]
         realValue = str(row.split(" ")[1]).strip()
-        if last == realValue:
-            continue
-        last = realValue
         image = cv.imread(imgPath)
         img_gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         # 二值化图像，黑白图像，只有0和1,0为0,1为255
@@ -168,22 +170,22 @@ def test():
         x = np.array(imgFeatrue)
         result = np.zeros(158)
         for i in range(33, 158):
-            for j in range(i+1, 158):
+            for j in range(i + 1, 158):
                 lstr = ""
                 rstr = ""
                 if i > 126:
-                    lstr = cpText[i-127]
+                    lstr = cpText[i - 127]
                 else:
                     lstr = str(i)
                 if j > 126:
-                    rstr = cpText[j-127]
+                    rstr = cpText[j - 127]
                 else:
                     rstr = str(j)
                 tempm1 = []
                 tempm2 = []
-                w = np.load(os.path.join("./data2/", "w_"+lstr+"_"+rstr+"_"".npy"))
-                m1 = np.load(os.path.join("./data2/", "m1_"+lstr+"_"+rstr+"_"".npy"))
-                m2 = np.load(os.path.join("./data2/", "m2_"+lstr+"_"+rstr+"_"".npy"))
+                w = np.load(os.path.join("./data2/", "w_" + lstr + "_" + rstr + "_"".npy"))
+                m1 = np.load(os.path.join("./data2/", "m1_" + lstr + "_" + rstr + "_"".npy"))
+                m2 = np.load(os.path.join("./data2/", "m2_" + lstr + "_" + rstr + "_"".npy"))
                 tempm1.append(m1)
                 tempm2.append(m2)
                 nm1 = np.array(tempm1)
@@ -191,14 +193,13 @@ def test():
                 y = np.reshape(np.dot(w, x.T), -1)
                 pos = np.reshape(np.dot(w, nm1.T), -1)
                 neg = np.reshape(np.dot(w, nm2.T), -1)
-                if np.absolute(y-pos) < np.absolute(y-neg):
+                if np.absolute(y - pos) < np.absolute(y - neg):
                     result[i] += 1
                 else:
                     result[j] += 1
         maxIndex = np.argmax(result)
-        predValue = ""
         if maxIndex > 126:
-            predValue = cpText[maxIndex-127]
+            predValue = cpText[maxIndex - 127]
         else:
             predValue = chr(maxIndex)
         print("真实值：", realValue, "预测值：", predValue)
@@ -206,9 +207,7 @@ def test():
             ok += 1
         else:
             error += 1
-    print("准确率：", (ok/(ok+error))*100, "%")
+    print("准确率：", (ok / (ok + error)) * 100, "%")
 
 
 test()
-
-
