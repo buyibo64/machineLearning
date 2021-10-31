@@ -9,7 +9,7 @@ cpText = ["京", "津", "沪", "渝", "冀", "豫"
     , "琼", "使", "布", "艺", "博"]
 
 
-def getTraingData(target, broTarget):
+def getTrainData(target, broTarget):
     """getTraingData
         根据传入字符找到样本，进行特征提取后，将正负样本返回。
 
@@ -43,7 +43,7 @@ def getTraingData(target, broTarget):
             for j in range(0, 35, 5):
                 temMatrix = imgviewx2[i:i + 4, j:j + 4]
                 sum = np.count_nonzero(temMatrix)
-                imgFeatrue.append(sum / 25)
+                imgFeatrue.append(float(sum / 25))
         # 1*49
         imgFeatrue = np.array(imgFeatrue)
 
@@ -104,7 +104,7 @@ def trainMain():
                 negStr = chr(j)
             else:
                 negStr = cpText[j - 126]
-            w1, w2 = getTraingData(posStr, negStr)
+            w1, w2 = getTrainData(posStr, negStr)
             train(w1, w2, i, j)
         print(i, j)
 
