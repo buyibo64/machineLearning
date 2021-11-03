@@ -3,14 +3,17 @@ from io import StringIO
 import random
 import os
 import numpy as np
-
+# ascll字体数量+1
+fontNum = 15
+# 中文字体数量+1
+fontCNum = 18
 
 
 def createTrainCharImage():
     labelText = open("label.txt", "w")
     for i in range(33, 127):
         temp = chr(i)
-        for j in range(1, 15):
+        for j in range(1, fontNum):
             # 每个字体生成一个字符
             # 纯白255
             img = Image.new("RGB", (50, 50), (255, 255, 255))
@@ -48,16 +51,16 @@ def createTestCharImage():
             img.save("./testImg/" + imgName)
 # 生成训练样本汉字
 def createChineseImage():
-    labelText = open("chineseTrainLabel.txt", "a")
+    labelText = open("label.txt", "a")
     cpText = ["京", "津", "沪", "渝", "冀", "豫"
               , "云", "辽", "黑", "湘", "皖", "鲁", "新"
               , "苏", "浙", "赣", "桂", "甘", "晋", "蒙"
               , "陕", "吉", "闽", "贵", "粤", "青", "藏"
               , "琼", "使", "布", "艺", "博"]
     for i in range(len(cpText)):
-        for fontIndex in range(18):
+        for fontIndex in range(1, fontCNum):
             img = Image.new("RGB", (50, 50), (255, 255, 255))
-            font = ImageFont.truetype(os.path.join("font", "cttf/ttf (" + str(fontIndex+1) + ").ttf"), random.randint(23, 28))
+            font = ImageFont.truetype(os.path.join("font", "cttf/ttf (" + str(fontIndex) + ").ttf"), random.randint(23, 28))
             drawImg = ImageDraw.Draw(img)
             area = (random.randint(10, 15), 10)
             # 将字体画入图片
@@ -79,7 +82,7 @@ def createTestChineseImage():
               , "琼", "使", "布", "艺", "博"]
     for i in range(len(cpText)):
         for fontIndex in range(2):
-            index = np.random.randint(1, 18)
+            index = np.random.randint(1, fontCNum)
             img = Image.new("RGB", (50, 50), (255, 255, 255))
             font = ImageFont.truetype(os.path.join("font", "cttf/ttf (" + str(index) + ").ttf"), random.randint(23, 28))
             drawImg = ImageDraw.Draw(img)
